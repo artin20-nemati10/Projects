@@ -74,34 +74,48 @@ else
 		if  ping -c 1 "$IP" > /dev/null 2>&1						# Pingable IP
 		then
 
-			printf "Pinging"
+			for i in {1..100}
+                                do      
+                                FILLED=$((i / 5))
+                                EMPTY=$((20 - FILLED))
 
-			for i in {1..20}							# Progress Bar
-			do
-			        printf '\e[95m%.0s.\e[0m' $i
+                                BAR=$(printf '\e[33m%0.s#\e[0m' $(seq 1 $FILLED))
+                                if [ "$EMPTY" -gt 0 ]; then
+                                        SPACES=$(printf '\e[33m%0.s-\e[0m' $(seq 1 $EMPTY))
+                                else    
+                                    SPACES=""
+                                fi
+                                printf "\r[%s%s] %d%%" "$BAR" "$SPACES" "$i"
 
-				sleep 0.2
-
-			done
+                                sleep 0.005
+                        done    
+                        echo
 			#------------------------------------
-			echo -e "\n$(SUCCESS)Average Ping $IP: \e[32m$(ping -c 2 "$IP" | tail -1 | cut -d '=' -f 2 | cut -d "/" -f 2)\e[0m ms" | tee -a Practice_08_output.txt 
-			echo "-----------------------------------" >> Practice_08_output.txt
+			echo -e "$(SUCCESS)Average Ping $IP: \e[32m$(ping -c 2 "$IP" | tail -1 | cut -d '=' -f 2 | cut -d "/" -f 2)\e[0m ms" | tee -a IP_Validation.log
+			echo "-----------------------------------" >> IP_Validation.log
 
 		else										
 												# Not Pingable IP
-			printf "Pinging"
-                        for i in {1..20}
-                        do									# Progress Bar
+			for i in {1..100}
+				do
+			        FILLED=$((i / 5))
+			        EMPTY=$((20 - FILLED))
 
-                                printf '\e[95m%.0s.\e[0m' $i
+			        BAR=$(printf '\e[33m%0.s#\e[0m' $(seq 1 $FILLED))
+        			if [ "$EMPTY" -gt 0 ]; then
+		                	SPACES=$(printf '\e[33m%0.s-\e[0m' $(seq 1 $EMPTY))
+			        else	
+			            SPACES=""
+			        fi
+			        printf "\r[%s%s] %d%%" "$BAR" "$SPACES" "$i"
 
-                                sleep 0.2
+				sleep 0.005
+			done
+			echo
 
-                        done
-
-			echo -e "\n$(ERROR) Average Ping $IP: \e[31m-1\e[0m ms" | tee -a Practice_08_output.txt
+			echo -e "$(ERROR) Average Ping $IP: \e[31m-1\e[0m ms" | tee -a IP_Validation.log
 			
-			echo "-----------------------------------" >> Practice_08_output.txt
+			echo "-----------------------------------" >> IP_Validation.log
 		fi
 	fi
 fi
